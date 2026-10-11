@@ -1,8 +1,7 @@
 package app.vending.web
 
-import app.vending.Balance
-import app.vending.Deposit
-import app.vending.Money
+import app.vending.insertmoney.InsertMoney
+import app.vending.money.Money
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,19 +11,19 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/deposits")
-class DepositsController {
+class DepositsController(private val insertMoney: InsertMoney) {
 
     @PostMapping
-    fun post(@RequestBody body: Map<String, Any>): ResponseEntity<Any> =
-        Money.decoder().decode(body).fold(
-            {
-                val balance = Deposit.of().apply(it)
-                val response = Balance.encoder().encode(balance)
+    fun post(@RequestBody body: Any): ResponseEntity<Any> =
+        Money.decoder().decode(body)
+            .fold(
+                {
+                    val balance = insertMoney.apply(it)
 
-                ResponseEntity(response, HttpStatus.CREATED)
-            },
-            {
-                ResponseEntity.badRequest().build()
-            }
-        )
+                    ResponseEntity(mapOf("credit" to balance.value), HttpStatus.CREATED)
+                },
+                {
+                    ResponseEntity.badRequest().build()
+                }
+            )
 }

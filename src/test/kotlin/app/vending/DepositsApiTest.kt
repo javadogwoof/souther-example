@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.env.Environment
 import org.springframework.http.MediaType
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class DepositsApiTest {
 
     @Autowired
@@ -24,12 +26,27 @@ class DepositsApiTest {
     }
 
     @Test
-    fun `120円入金すると投入金額が120円になる`() {
+    fun `100円玉を入れると投入金額が100円になる`() {
         client.post().uri("/deposits")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("""{"amount": 120}""")
+            .body("\"HundredYen\"")
             .exchange()
             .expectStatus().isCreated()
-            .expectBody().json("""{"credit": 120}""")
+            .expectBody().json("""{"credit": 100}""")
+    }
+
+    @Test
+    fun `100円玉と50円玉を続けて入れると投入金額が150円になる`() {
+        client.post().uri("/deposits")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body("\"HundredYen\"")
+            .exchange()
+
+        client.post().uri("/deposits")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body("\"FiftyYen\"")
+            .exchange()
+            .expectStatus().isCreated()
+            .expectBody().json("""{"credit": 150}""")
     }
 }

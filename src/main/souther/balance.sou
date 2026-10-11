@@ -1,21 +1,20 @@
-module app.vending
+module app.vending.balance exposing ( Balance, HasNoCredit, HasCredit, addToBalance )
 
-data Money = { amount: Int }
-data Balance = { credit: Int }
+import app.vending.money (Amount)
 
-behavior addToBalance : (balance: Balance, money: Money) -> Balance
+data Balance = HasCredit | HasNoCredit
 
-let addToBalance (balance, money) = Balance { credit = balance.credit + money.amount }
+data HasNoCredit
+data HasCredit = Int
+    invariant value > 0
+
+behavior addToBalance : (balance: Balance, amount: Amount) -> HasCredit
+
+let addToBalance (balance, amount) = match balance with
+    | HasCredit(credit) -> HasCredit(credit + amount.value)
+    | HasNoCredit -> HasCredit(amount.value)
 
 example addToBalance
-    | "入金額が0円の時、120円入れると入金額は120円になる" : (Balance{ credit = 0 }, Money { amount = 120 }) -> Balance { credit = 120 }
-    | "入金額が20円の時、120円入れると入金額は140円になる" : (Balance{ credit = 20 }, Money { amount = 120 }) -> Balance { credit = 140 }
-
-behavior loadBalance : () -> Balance
-behavior saveBalance : (balance: Balance) -> Balance
-
-behavior insertMoney : (money: Money) -> Balance
-    depends on loadBalance, saveBalance
-
-let insertMoney (money, loadBalance, saveBalance) =
-    saveBalance(addToBalance(loadBalance(), money))
+    | "入金額が0円の時、100円入れると入金額は100円になる" : (HasNoCredit, Amount(100)) -> HasCredit(100)
+    | "入金額が10円の時、100円入れると入金額は110円になる" : (HasCredit(1), Amount(100)) -> HasCredit(101)
+    | "入金額が100円の時、100円入れると入金額は200円になる" : (HasCredit(100), Amount(100)) -> HasCredit(200)

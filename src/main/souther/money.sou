@@ -1,0 +1,38 @@
+module app.vending.money exposing (
+    Money,
+    TenYen,
+    FiftyYen,
+    HundredYen,
+    FiveHundredYen,
+    ThousandYen,
+    Amount,
+    amountOf
+)
+
+data TenYen
+data FiftyYen
+data HundredYen
+data FiveHundredYen
+data ThousandYen
+
+data Money = TenYen | FiftyYen | HundredYen | FiveHundredYen | ThousandYen
+
+data Amount = Int
+    invariant value > 0
+
+behavior amountOf : (money: Money) -> Amount
+
+let amountOf (money) =
+    match money with
+        | TenYen -> Amount(10)
+        | FiftyYen -> Amount(50)
+        | HundredYen -> Amount(100)
+        | FiveHundredYen -> Amount(500)
+        | ThousandYen -> Amount(1000)
+
+example amountOf
+    | (TenYen) -> Amount(10)
+    | (FiftyYen) -> Amount(50)
+    | (HundredYen) -> Amount(100)
+    | (FiveHundredYen) -> Amount(500)
+    | (ThousandYen) -> Amount(1000)

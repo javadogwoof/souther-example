@@ -1,21 +1,27 @@
-module app.vending.balance
+module app.vending.insertmoney
 
-data Money = { amount: Int }
-data Balance = { credit: Int }
-
-behavior addToBalance : (balance: Balance, money: Money) -> Balance
-
-let addToBalance (balance, money) = Balance { credit = balance.credit + money.amount }
-
-example addToBalance
-    | "入金額が0円の時、120円入れると入金額は120円になる" : (Balance{ credit = 0 }, Money { amount = 120 }) -> Balance { credit = 120 }
-    | "入金額が20円の時、120円入れると入金額は140円になる" : (Balance{ credit = 20 }, Money { amount = 120 }) -> Balance { credit = 140 }
+import app.vending.money ( Money, TenYen, FiftyYen, HundredYen, FiveHundredYen, ThousandYen, amountOf )
+import app.vending.balance ( Balance, HasCredit, HasNoCredit, addToBalance )
 
 behavior loadBalance : () -> Balance
-behavior saveBalance : (balance: Balance) -> Balance
+behavior saveBalance : (balance: HasCredit) -> HasCredit
 
-behavior insertMoney : (money: Money) -> Balance
+fake saveBalance
+    | (HasCredit(10)) -> HasCredit(10)
+    | (HasCredit(50)) -> HasCredit(50)
+    | (HasCredit(100)) -> HasCredit(100)
+    | (HasCredit(500)) -> HasCredit(500)
+    | (HasCredit(1000)) -> HasCredit(1000)
+
+behavior insertMoney : (money: Money) -> HasCredit
     depends on loadBalance, saveBalance
 
 let insertMoney (money, loadBalance, saveBalance) =
-    saveBalance(addToBalance(loadBalance(), money))
+    saveBalance(addToBalance(loadBalance(), amountOf(money)))
+
+example insertMoney
+    | "10円玉を入れると入金額が10円増える" : (TenYen) with loadBalance = HasNoCredit -> HasCredit(10)
+    | "50円玉を入れると入金額が50円増える" : (FiftyYen) with loadBalance = HasNoCredit -> HasCredit(50)
+    | "100円玉を入れると入金額が100円増える" : (HundredYen) with loadBalance = HasNoCredit -> HasCredit(100)
+    | "500円玉を入れると入金額が500円増える" : (FiveHundredYen) with loadBalance = HasNoCredit -> HasCredit(500)
+    | "1000円札を入れると入金額が1000円増える" : (ThousandYen) with loadBalance = HasNoCredit -> HasCredit(1000)

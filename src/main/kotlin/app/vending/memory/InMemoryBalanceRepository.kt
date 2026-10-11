@@ -8,7 +8,7 @@ import app.vending.insertmoney.SaveBalance
 import org.springframework.stereotype.Component
 
 @Component
-class InMemoryBalanceStore {
+class InMemoryBalanceRepository {
     private var balance: Balance = HasNoCredit.INSTANCE
 
     val load = object : LoadBalance() {
