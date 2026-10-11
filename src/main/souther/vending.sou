@@ -1,0 +1,11 @@
+module app.vending
+
+data Money = { amount: Int }
+data Balance = { credit: Int }
+
+behavior deposit : (money: Money) -> Balance
+
+let deposit (money) = Balance { credit = money.amount }
+
+example deposit
+    | "120円入れると投入金額は120円" : (Money { amount = 120 }) -> Balance { credit = 120 }
