@@ -1,0 +1,21 @@
+module app.vending
+
+data Money = { amount: Int }
+data Balance = { credit: Int }
+
+behavior addToBalance : (balance: Balance, money: Money) -> Balance
+
+let addToBalance (balance, money) = Balance { credit = balance.credit + money.amount }
+
+example addToBalance
+    | "入金額が0円の時、120円入れると入金額は120円になる" : (Balance{ credit = 0 }, Money { amount = 120 }) -> Balance { credit = 120 }
+    | "入金額が20円の時、120円入れると入金額は140円になる" : (Balance{ credit = 20 }, Money { amount = 120 }) -> Balance { credit = 140 }
+
+behavior loadBalance : () -> Balance
+behavior saveBalance : (balance: Balance) -> Balance
+
+behavior insertMoney : (money: Money) -> Balance
+    depends on loadBalance, saveBalance
+
+let insertMoney (money, loadBalance, saveBalance) =
+    saveBalance(addToBalance(loadBalance(), money))

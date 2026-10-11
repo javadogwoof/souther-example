@@ -4,7 +4,7 @@ java = "25"
 
 [tasks."souther:compile"]
 description = "Compile the .sou model (examples are checked here)"
-run = "./gradlew compileSouther"
+run = "./gradlew southerModelJar"
 
 [tasks."souther:examples"]
 description = "Report how well the examples cover the model"
