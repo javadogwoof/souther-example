@@ -1,2 +1,11 @@
 [tools]
 java = "25"
+"github:souther-lang/souther" = { version = "0.2.0", asset_pattern = "souther" }
+
+[tasks."souther:compile"]
+description = "Compile the .sou model (examples are checked here)"
+run = "./gradlew compileSouther"
+
+[tasks."souther:examples"]
+description = "Report how well the examples cover the model"
+run = "souther examples src/main/souther/*.sou"
