@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "2.4.21"
     kotlin("plugin.spring") version "2.4.21"
     id("org.springframework.boot") version "4.0.7"
+    id("org.souther-lang.souther") version "0.2.0"
 }
 
 repositories {
@@ -21,6 +22,10 @@ dependencies {
 
 kotlin {
     jvmToolchain(25)
+}
+
+souther {
+    southerVersion = "0.2.0"
 }
 
 tasks.test {
