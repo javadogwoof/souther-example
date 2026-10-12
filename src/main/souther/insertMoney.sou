@@ -1,10 +1,7 @@
 module app.vending.insertmoney
 
 import app.vending.money ( Money, TenYen, FiftyYen, HundredYen, FiveHundredYen, ThousandYen, amountOf )
-import app.vending.balance ( Balance, HasCredit, HasNoCredit, addToBalance )
-
-behavior loadBalance : () -> Balance
-behavior saveBalance : (balance: HasCredit) -> HasCredit
+import app.vending.balance ( HasCredit, HasNoCredit, addToBalance, loadBalance, saveBalance )
 
 fake saveBalance
     | (HasCredit(10)) -> HasCredit(10)

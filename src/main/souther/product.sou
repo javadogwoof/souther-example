@@ -1,0 +1,19 @@
+module app.vending.product exposing ( Product, Tea, Coffee, priceOf )
+
+import app.vending.money ( Amount )
+
+data Tea
+data Coffee
+
+data Product = Tea | Coffee
+
+behavior priceOf : (product: Product) -> Amount
+
+let priceOf (product) =
+    match product with
+        | Tea -> Amount(120)
+        | Coffee -> Amount(150)
+
+example priceOf
+    | "お茶は120円" : (Tea) -> Amount(120)
+    | "コーヒーは150円" : (Coffee) -> Amount(150)

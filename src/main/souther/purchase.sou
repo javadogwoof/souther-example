@@ -1,0 +1,38 @@
+module app.vending.purchase exposing ( Change, Purchased, InsufficientCredit, purchase )
+
+import app.vending.balance ( HasCredit, HasNoCredit, loadBalance, clearBalance )
+import app.vending.product ( Product, Tea, Coffee, priceOf )
+
+data Change = Int
+    invariant value >= 0
+
+data Purchased = { product: Product, change: Change }
+
+data InsufficientCredit
+
+behavior purchase : (product: Product) -> Purchased | InsufficientCredit
+    depends on loadBalance, clearBalance
+
+let purchase (product, loadBalance, clearBalance) =
+    match loadBalance() with
+        | HasNoCredit -> InsufficientCredit
+        | HasCredit as balance ->
+            if Change(balance.value - priceOf(product).value) as change
+                then {
+                    let cleared = clearBalance()
+                    Purchased { product = product, change = change }
+                }
+                else InsufficientCredit
+
+fake clearBalance
+    | _ -> HasNoCredit
+
+example purchase
+    | "500円入っている時、お茶のボタンを押すとお茶と380円のおつりが出る" :
+        (Tea) with loadBalance = HasCredit(500) -> Purchased { product = Tea, change = Change(380) }
+    | "500円入っている時、コーヒーのボタンを押すとコーヒーと350円のおつりが出る" :
+        (Coffee) with loadBalance = HasCredit(500) -> Purchased { product = Coffee, change = Change(350) }
+    | "100円しか入っていない時、お茶のボタンを押しても買えない" :
+        (Tea) with loadBalance = HasCredit(100) -> InsufficientCredit
+    | "何も入っていない時、お茶のボタンを押しても買えない" :
+        (Tea) with loadBalance = HasNoCredit -> InsufficientCredit

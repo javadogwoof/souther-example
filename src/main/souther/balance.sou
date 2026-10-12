@@ -1,4 +1,4 @@
-module app.vending.balance exposing ( Balance, HasNoCredit, HasCredit, addToBalance )
+module app.vending.balance exposing ( Balance, HasNoCredit, HasCredit, addToBalance, loadBalance, saveBalance, clearBalance )
 
 import app.vending.money (Amount)
 
@@ -7,6 +7,10 @@ data Balance = HasCredit | HasNoCredit
 data HasNoCredit
 data HasCredit = Int
     invariant value > 0
+
+behavior loadBalance : () -> Balance
+behavior saveBalance : (balance: HasCredit) -> HasCredit
+behavior clearBalance : () -> HasNoCredit
 
 behavior addToBalance : (balance: Balance, amount: Amount) -> HasCredit
 
